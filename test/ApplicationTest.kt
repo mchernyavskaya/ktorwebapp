@@ -1,14 +1,7 @@
 package com.example
 
-import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
-import io.ktor.features.*
-import org.slf4j.event.*
-import io.ktor.routing.*
+import com.example.module
 import io.ktor.http.*
-import com.fasterxml.jackson.databind.*
-import io.ktor.jackson.*
 import kotlin.test.*
 import io.ktor.server.testing.*
 
