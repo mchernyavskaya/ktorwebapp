@@ -1,5 +1,6 @@
 package com.example
 
+import com.example.com.example.Person
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.Application
 import io.ktor.application.call
@@ -21,6 +22,11 @@ import io.ktor.routing.routing
 import org.slf4j.event.Level
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+
+private val DATA = listOf<Person>(
+    Person("Jane Doe", 1980),
+    Person("John Doe", 1990)
+)
 
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
@@ -54,6 +60,7 @@ fun Application.module(testing: Boolean = false) {
 
         get("/json/jackson") {
             call.respond(mapOf("hello" to "world"))
+            // call.respond(DATA)
         }
     }
 }
