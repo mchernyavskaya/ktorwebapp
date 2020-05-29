@@ -1,14 +1,23 @@
 package com.example
 
-import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
-import io.ktor.features.*
-import org.slf4j.event.*
-import io.ktor.routing.*
-import io.ktor.http.*
-import com.fasterxml.jackson.databind.*
-import io.ktor.jackson.*
+import com.fasterxml.jackson.databind.SerializationFeature
+import io.ktor.application.Application
+import io.ktor.application.call
+import io.ktor.application.install
+import io.ktor.features.CallLogging
+import io.ktor.features.Compression
+import io.ktor.features.ContentNegotiation
+import io.ktor.features.deflate
+import io.ktor.features.gzip
+import io.ktor.features.minimumSize
+import io.ktor.http.ContentType
+import io.ktor.jackson.jackson
+import io.ktor.request.path
+import io.ktor.response.respond
+import io.ktor.response.respondText
+import io.ktor.routing.get
+import io.ktor.routing.routing
+import org.slf4j.event.Level
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
