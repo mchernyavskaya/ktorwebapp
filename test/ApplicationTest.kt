@@ -61,4 +61,16 @@ class ApplicationTest {
             }
         }
     }
+
+    @org.junit.Test
+    fun testDeletePerson() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Delete, "/person/3").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+            handleRequest(HttpMethod.Get, "/person/3").apply {
+                assertEquals(HttpStatusCode.NotFound, response.status())
+            }
+        }
+    }
 }
