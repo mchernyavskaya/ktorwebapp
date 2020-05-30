@@ -13,19 +13,23 @@ import io.ktor.features.deflate
 import io.ktor.features.gzip
 import io.ktor.features.minimumSize
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
 import io.ktor.request.path
+import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.response.respondText
+import io.ktor.routing.delete
 import io.ktor.routing.get
+import io.ktor.routing.post
 import io.ktor.routing.routing
 import org.slf4j.event.Level
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
-private val DATA = listOf<Person>(
-    Person("Jane Doe", 1980),
-    Person("John Doe", 1990)
+private val DATA = mutableMapOf<Int, Person>(
+    1 to Person(id = 1, name = "Jane Doe", birthYear = 1980),
+    2 to Person(id = 2, name = "John Doe", birthYear = 1990)
 )
 
 @Suppress("unused") // Referenced in application.conf
@@ -58,9 +62,40 @@ fun Application.module(testing: Boolean = false) {
             call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
         }
 
-        get("/json/jackson") {
-            call.respond(mapOf("hello" to "world"))
-            // call.respond(DATA)
+        get("/person") {
+            call.respond(DATA)
+        }
+
+        get("/person/{id}") {
+            call.parameters["id"]?.toInt()?.let {
+                if (DATA.containsKey(it)) {
+                    call.respond(DATA[it]!!)
+                    return@get
+                }
+            }
+            call.respond(HttpStatusCode.NotFound)
+        }
+
+        post("/person") {
+            val person = call.receive(Person::class)
+            val exists = DATA.containsKey(person.id)
+            synchronized(DATA) {
+                DATA[person.id] = person
+            }
+            call.respond(if (exists) HttpStatusCode.Accepted else HttpStatusCode.Created)
+        }
+
+        delete("/person/{id}") {
+            call.parameters["id"]?.toInt()?.let {
+                synchronized(DATA) {
+                    if (DATA.containsKey(it)) {
+                        DATA.remove(it)
+                    }
+                }
+                call.respond(HttpStatusCode.OK)
+                return@delete
+            }
+            call.respond(HttpStatusCode.NotFound)
         }
     }
 }
