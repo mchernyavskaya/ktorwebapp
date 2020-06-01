@@ -30,27 +30,27 @@ object PersonTable : IntIdTable() {
 @KtorExperimentalAPI
 object PersonRepository {
 
-    fun get(id: Int): Person? = PersonEntity.findById(id)?.toDto()
+    fun get(id: Int): Person? = transaction(Database.connection) {
+        PersonEntity.findById(id)?.toDto()
+    }
 
-    fun getAll(): List<PersonEntity> = PersonEntity.all().toList()
+    fun getAll(): List<PersonEntity> = transaction(Database.connection) {
+        PersonEntity.all().toList()
+    }
 
-    /**
-     * Combined create and update as I don't really want to throw errors on not found
-     * (will just do an upsert)
-     */
-    fun createOrUpdate(person: Person): Person {
-        val id = if (person.id == 0) null else person.id
-        if (id == null) {
-            val created = transaction(Database.connection) {
-                PersonEntity.new(id) {
-                    name = person.name
-                    birthYear = person.birthYear
-                }
+    fun create(person: Person): Person {
+        val created = transaction(Database.connection) {
+            PersonEntity.new(person.id) {
+                name = person.name
+                birthYear = person.birthYear
             }
-            return created.toDto()
         }
+        return created.toDto()
+    }
+
+    fun update(person: Person): Person {
         val updated = transaction(Database.connection) {
-            PersonEntity.findById(person.id)!!.let {
+            PersonEntity.findById(person.id!!)!!.let {
                 it.name = person.name
                 it.birthYear = person.birthYear
                 return@transaction it

@@ -1,7 +1,7 @@
 package com.example.com.example
 
 data class Person(
-    val id: Int = 0,
+    val id: Int? = null,
     val name: String,
     val birthYear: Int
 ) {
