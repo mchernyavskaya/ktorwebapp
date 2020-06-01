@@ -34,8 +34,8 @@ object PersonRepository {
         PersonEntity.findById(id)?.toDto()
     }
 
-    fun getAll(): List<PersonEntity> = transaction(Database.connection) {
-        PersonEntity.all().toList()
+    fun getAll(): List<Person> = transaction(Database.connection) {
+        PersonEntity.all().map { it.toDto() }.toList()
     }
 
     fun create(person: Person): Person {
@@ -60,6 +60,8 @@ object PersonRepository {
     }
 
     fun delete(id: Int) {
-        PersonEntity.findById(id)?.delete()
+        transaction(Database.connection) {
+            PersonEntity.findById(id)?.delete()
+        }
     }
 }

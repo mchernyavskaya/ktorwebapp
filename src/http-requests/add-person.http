@@ -2,7 +2,6 @@ POST http://localhost:8080/person
 Content-Type: application/json
 
 {
-  "id": 3,
   "name" : "Maryna Cherniavska",
   "birthYear": 1981
 }

@@ -21,7 +21,7 @@ class ApplicationTest {
         }
     }
 
-    @org.junit.Test
+    @Test
     fun testCreatePerson() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Post, "/person") {
@@ -41,7 +41,7 @@ class ApplicationTest {
         }
     }
 
-    @org.junit.Test
+    @Test
     fun testUpdatePerson() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Post, "/person") {
@@ -62,7 +62,7 @@ class ApplicationTest {
         }
     }
 
-    @org.junit.Test
+    @Test
     fun testDeletePerson() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Delete, "/person/3").apply {

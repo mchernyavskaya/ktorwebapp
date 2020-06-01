@@ -1,8 +1,8 @@
-POST http://localhost:8080/person
+PUT http://localhost:8080/person
 Content-Type: application/json
 
 {
-  "id": 3,
+  "id": 1,
   "name" : "Maryna",
   "birthYear": 1982
 }
