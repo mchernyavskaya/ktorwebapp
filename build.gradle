@@ -2,7 +2,7 @@ buildscript {
     repositories {
         jcenter()
     }
-    
+
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
@@ -45,6 +45,10 @@ dependencies {
     implementation "ch.qos.logback:logback-classic:$logback_version"
     implementation "io.ktor:ktor-server-core:$ktor_version"
     implementation "io.ktor:ktor-jackson:$ktor_version"
+    // https://mvnrepository.com/artifact/org.jetbrains.exposed/exposed
+    implementation "org.jetbrains.exposed:exposed:0.17.7"
+    implementation "mysql:mysql-connector-java:8.0.20"
+
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
 }
 

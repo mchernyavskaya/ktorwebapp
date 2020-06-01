@@ -1,6 +1,7 @@
 package com.example
 
 import com.example.com.example.Person
+import com.example.configuration.Database
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.Application
 import io.ktor.application.call
@@ -23,6 +24,7 @@ import io.ktor.routing.delete
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.routing
+import io.ktor.util.KtorExperimentalAPI
 import org.slf4j.event.Level
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -32,10 +34,12 @@ private val DATA = mutableMapOf<Int, Person>(
     2 to Person(id = 2, name = "John Doe", birthYear = 1990)
 )
 
+@KtorExperimentalAPI
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
     log.info("Starting the application with testing=$testing")
+
     install(Compression) {
         gzip {
             priority = 1.0
@@ -56,6 +60,8 @@ fun Application.module(testing: Boolean = false) {
             enable(SerializationFeature.INDENT_OUTPUT)
         }
     }
+
+    Database(this).connect()
 
     routing {
         get("/") {
