@@ -19,4 +19,17 @@ data class Person(
     override fun hashCode(): Int {
         return id.hashCode()
     }
+
+    companion object {
+        fun fromEntity(p: PersonEntity?): Person? {
+            if (p == null) {
+                return null
+            }
+            return Person(
+                id = p.id.value,
+                name = p.name,
+                birthYear = p.birthYear
+            )
+        }
+    }
 }

@@ -13,13 +13,6 @@ class PersonEntity(id: EntityID<Int>) : IntEntity(id) {
 
     var name by PersonTable.name
     var birthYear by PersonTable.birthYear
-
-    /**
-     * Instead of mappers, just added a transformation method
-     */
-    fun toDto(): Person {
-        return Person(id.value, name, birthYear)
-    }
 }
 
 object PersonTable : IntIdTable() {
@@ -28,35 +21,33 @@ object PersonTable : IntIdTable() {
 }
 
 @KtorExperimentalAPI
-object PersonRepository {
+class PersonRepository {
 
-    fun get(id: Int): Person? = transaction(Database.connection) {
-        PersonEntity.findById(id)?.toDto()
+    fun get(id: Int): PersonEntity? = transaction(Database.connection) {
+        PersonEntity.findById(id)
     }
 
-    fun getAll(): List<Person> = transaction(Database.connection) {
-        PersonEntity.all().map { it.toDto() }.toList()
+    fun getAll(): List<PersonEntity> = transaction(Database.connection) {
+        PersonEntity.all().sortedBy { it.name }.toList()
     }
 
-    fun create(person: Person): Person {
-        val created = transaction(Database.connection) {
-            PersonEntity.new(person.id) {
-                name = person.name
-                birthYear = person.birthYear
+    fun create(id: Int? = null, name: String, birthYear: Int): PersonEntity {
+        return transaction(Database.connection) {
+            PersonEntity.new(id) {
+                this.name = name
+                this.birthYear = birthYear
             }
         }
-        return created.toDto()
     }
 
-    fun update(person: Person): Person {
-        val updated = transaction(Database.connection) {
-            PersonEntity.findById(person.id!!)!!.let {
-                it.name = person.name
-                it.birthYear = person.birthYear
+    fun update(id: Int, name: String, birthYear: Int): PersonEntity {
+        return transaction(Database.connection) {
+            PersonEntity.findById(id)!!.let {
+                it.name = name
+                it.birthYear = birthYear
                 return@transaction it
             }
         }
-        return updated.toDto()
     }
 
     fun delete(id: Int) {

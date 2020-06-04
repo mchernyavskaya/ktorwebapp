@@ -6,10 +6,12 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
+        classpath "org.koin:koin-gradle-plugin:$koin_version"
     }
 }
 
 
+apply plugin: 'koin'
 apply plugin: 'kotlin'
 apply plugin: 'application'
 
@@ -48,7 +50,11 @@ dependencies {
     // https://mvnrepository.com/artifact/org.jetbrains.exposed/exposed
     implementation "org.jetbrains.exposed:exposed:0.17.7"
     implementation "mysql:mysql-connector-java:8.0.20"
+    // Koin with ktor
+    implementation "org.koin:koin-ktor:$koin_version"
 
+    // Koin for Unit tests
+    testImplementation "org.koin:koin-test:$koin_version"
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
     testImplementation "org.testcontainers:mysql:1.14.3"
 }
