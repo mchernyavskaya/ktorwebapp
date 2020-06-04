@@ -12,7 +12,7 @@ import io.ktor.util.KtorExperimentalAPI
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-@KtorExperimentalAPI class ApplicationTest {
+@KtorExperimentalAPI class ApplicationTest : AbstractContainerBaseTest() {
     @Test
     fun testRoot() {
         withTestApplication({

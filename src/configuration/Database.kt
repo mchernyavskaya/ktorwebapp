@@ -11,8 +11,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 @KtorExperimentalAPI
 class Database(
-    val application: Application,
-    val testing: Boolean = false
+    private val application: Application,
+    private val testing: Boolean = false
 ) {
     companion object {
         var connection: Database? = null
