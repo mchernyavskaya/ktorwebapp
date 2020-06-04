@@ -57,7 +57,7 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
-    Database(this).connect()
+    Database(this, testing).connect()
 
     routing {
         get("/") {

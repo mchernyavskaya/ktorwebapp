@@ -29,8 +29,8 @@ shadowJar {
 sourceSets {
     main.kotlin.srcDirs = main.java.srcDirs = ['src']
     test.kotlin.srcDirs = test.java.srcDirs = ['test']
-    main.resources.srcDirs = ['resources']
-    test.resources.srcDirs = ['testresources']
+    main.resources.srcDirs(['resources'])
+    test.resources.srcDirs(['testresources'])
 }
 
 repositories {
@@ -50,6 +50,7 @@ dependencies {
     implementation "mysql:mysql-connector-java:8.0.20"
 
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
+    testImplementation "org.testcontainers:mysql:1.14.3"
 }
 
 

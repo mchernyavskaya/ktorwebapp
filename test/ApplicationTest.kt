@@ -1,5 +1,6 @@
 package com.example
 
+import io.ktor.config.MapApplicationConfig
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -7,13 +8,17 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
+import io.ktor.util.KtorExperimentalAPI
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ApplicationTest {
+@KtorExperimentalAPI class ApplicationTest {
     @Test
     fun testRoot() {
-        withTestApplication({ module(testing = true) }) {
+        withTestApplication({
+            applyTestEnv(environment.config as MapApplicationConfig)
+            module(testing = true)
+        }) {
             handleRequest(HttpMethod.Get, "/").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertEquals("HELLO WORLD!", response.content)
@@ -23,7 +28,10 @@ class ApplicationTest {
 
     @Test
     fun testCreatePerson() {
-        withTestApplication({ module(testing = true) }) {
+        withTestApplication({
+            applyTestEnv(environment.config as MapApplicationConfig)
+            module(testing = true)
+        }) {
             handleRequest(HttpMethod.Post, "/person") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(
@@ -43,7 +51,10 @@ class ApplicationTest {
 
     @Test
     fun testUpdatePerson() {
-        withTestApplication({ module(testing = true) }) {
+        withTestApplication({
+            applyTestEnv(environment.config as MapApplicationConfig)
+            module(testing = true)
+        }) {
             handleRequest(HttpMethod.Post, "/person") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(
@@ -64,13 +75,27 @@ class ApplicationTest {
 
     @Test
     fun testDeletePerson() {
-        withTestApplication({ module(testing = true) }) {
+        withTestApplication({
+            applyTestEnv(environment.config as MapApplicationConfig)
+            module(testing = true)
+        }) {
             handleRequest(HttpMethod.Delete, "/person/3").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
             handleRequest(HttpMethod.Get, "/person/3").apply {
                 assertEquals(HttpStatusCode.NotFound, response.status())
             }
+        }
+    }
+
+    private fun applyTestEnv(config: MapApplicationConfig) {
+        config.apply {
+            // Set custom properties
+            put("ktor.database.host", "localhost")
+            put("ktor.database.port", "3306")
+            put("ktor.database.name", "test")
+            put("ktor.database.user", "test")
+            put("ktor.database.pass", "test")
         }
     }
 }
