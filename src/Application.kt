@@ -16,6 +16,7 @@ import io.ktor.features.DefaultHeaders
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
+import io.ktor.metrics.micrometer.MicrometerMetrics
 import io.ktor.request.path
 import io.ktor.request.receive
 import io.ktor.response.respond
@@ -26,6 +27,8 @@ import io.ktor.routing.post
 import io.ktor.routing.put
 import io.ktor.routing.routing
 import io.ktor.util.KtorExperimentalAPI
+import io.micrometer.prometheus.PrometheusConfig
+import io.micrometer.prometheus.PrometheusMeterRegistry
 import org.koin.dsl.module
 import org.koin.ktor.ext.Koin
 import org.koin.ktor.ext.inject
@@ -37,6 +40,9 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 val appModule = module {
     single { PersonService(get()) }
     single { PersonRepository() }
+    single() {
+        PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
+    }
 }
 
 @KtorExperimentalAPI
@@ -58,19 +64,27 @@ fun Application.module(testing: Boolean = false) {
         modules(appModule)
     }
 
+    val registry: PrometheusMeterRegistry by inject()
+    install(MicrometerMetrics) {
+        // for tests, SimpleMeterRegistry would be used
+        this.registry = registry
+    }
+
     val database = Database(this, testing)
     database.connect()
-
     environment.monitor.subscribe(ApplicationStopping) {
         database.cleanup()
     }
 
     val personService: PersonService by inject()
 
-
     routing {
         get("/") {
             call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
+        }
+
+        get("/prometheus") {
+            call.respondText(registry.scrape())
         }
 
         get("/person") {

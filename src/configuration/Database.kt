@@ -38,7 +38,7 @@ class Database(
             } else {
                 Database.connect(
                     url = "jdbc:mysql://$host:$port/$database",
-                    driver = "com.mysql.jdbc.Driver",
+                    driver = "com.mysql.cj.jdbc.Driver",
                     user = user,
                     password = pass
                 )

@@ -54,6 +54,9 @@ dependencies {
     implementation "org.koin:koin-ktor:$koin_version"
     // should be a test dependency but...
     implementation "org.testcontainers:mysql:1.14.3"
+    // metrics
+    implementation 'io.micrometer:micrometer-registry-prometheus:latest.release'
+    implementation "io.ktor:ktor-metrics-micrometer:$ktor_version"
 
     // Koin for Unit tests
     testImplementation "org.koin:koin-test:$koin_version"
