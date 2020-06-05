@@ -27,6 +27,7 @@ import io.ktor.routing.post
 import io.ktor.routing.put
 import io.ktor.routing.routing
 import io.ktor.util.KtorExperimentalAPI
+import io.micrometer.core.instrument.binder.system.UptimeMetrics
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import org.koin.dsl.module
@@ -65,9 +66,15 @@ fun Application.module(testing: Boolean = false) {
     }
 
     val registry: PrometheusMeterRegistry by inject()
+    // http calls test (trailing slash important!)
+    // ab -n 100 http://localhost:8080/
+    // ab -n 100 http://localhost:8080/person/
     install(MicrometerMetrics) {
         // for tests, SimpleMeterRegistry would be used
         this.registry = registry
+        meterBinders = listOf(
+            UptimeMetrics()
+        )
     }
 
     val database = Database(this, testing)
