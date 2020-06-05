@@ -52,11 +52,13 @@ dependencies {
     implementation "mysql:mysql-connector-java:8.0.20"
     // Koin with ktor
     implementation "org.koin:koin-ktor:$koin_version"
+    // should be a test dependency but...
+    implementation "org.testcontainers:mysql:1.14.3"
 
     // Koin for Unit tests
     testImplementation "org.koin:koin-test:$koin_version"
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
-    testImplementation "org.testcontainers:mysql:1.14.3"
+
 }
 
 

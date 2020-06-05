@@ -6,6 +6,7 @@ import com.example.com.example.PersonService
 import com.example.configuration.Database
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.Application
+import io.ktor.application.ApplicationStopping
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.application.log
@@ -57,9 +58,15 @@ fun Application.module(testing: Boolean = false) {
         modules(appModule)
     }
 
-    Database(this, testing).connect()
+    val database = Database(this, testing)
+    database.connect()
+
+    environment.monitor.subscribe(ApplicationStopping) {
+        database.cleanup()
+    }
 
     val personService: PersonService by inject()
+
 
     routing {
         get("/") {

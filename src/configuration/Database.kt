@@ -8,6 +8,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.testcontainers.containers.MySQLContainer
 
 @KtorExperimentalAPI
 class Database(
@@ -16,6 +17,7 @@ class Database(
 ) {
     companion object {
         var connection: Database? = null
+        private var testContainer: ConcreteMySQLContainer? = null
     }
 
     fun connect() {
@@ -26,11 +28,12 @@ class Database(
             val user = getDbProperty("user")
             val pass = getDbProperty("pass")
             connection = if (testing) {
+                startTestContainer()
                 Database.connect(
-                    url = "jdbc:tc:mysql://$host:$port/$database",
-                    driver = "org.testcontainers.jdbc.ContainerDatabaseDriver",
-                    user = user,
-                    password = pass
+                    url = testContainer!!.jdbcUrl,
+                    driver = testContainer!!.driverClassName,
+                    user = testContainer!!.username,
+                    password = testContainer!!.password
                 )
             } else {
                 Database.connect(
@@ -47,6 +50,17 @@ class Database(
         }
     }
 
+    fun cleanup() {
+        testContainer?.stop()
+    }
+
+    private fun startTestContainer() {
+        testContainer = if (testing) ConcreteMySQLContainer() else null
+        testContainer?.start()
+    }
+
     private fun getDbProperty(name: String): String = application.environment
         .config.property("ktor.database.$name").getString()
 }
+
+internal class ConcreteMySQLContainer() : MySQLContainer<ConcreteMySQLContainer>()

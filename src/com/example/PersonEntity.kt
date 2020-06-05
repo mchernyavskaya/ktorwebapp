@@ -1,6 +1,5 @@
 package com.example.com.example
 
-import com.example.configuration.Database
 import io.ktor.util.KtorExperimentalAPI
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
@@ -23,16 +22,16 @@ object PersonTable : IntIdTable() {
 @KtorExperimentalAPI
 class PersonRepository {
 
-    fun get(id: Int): PersonEntity? = transaction(Database.connection) {
+    fun get(id: Int): PersonEntity? = transaction() {
         PersonEntity.findById(id)
     }
 
-    fun getAll(): List<PersonEntity> = transaction(Database.connection) {
+    fun getAll(): List<PersonEntity> = transaction() {
         PersonEntity.all().sortedBy { it.name }.toList()
     }
 
     fun create(id: Int? = null, name: String, birthYear: Int): PersonEntity {
-        return transaction(Database.connection) {
+        return transaction() {
             PersonEntity.new(id) {
                 this.name = name
                 this.birthYear = birthYear
@@ -41,7 +40,7 @@ class PersonRepository {
     }
 
     fun update(id: Int, name: String, birthYear: Int): PersonEntity {
-        return transaction(Database.connection) {
+        return transaction() {
             PersonEntity.findById(id)!!.let {
                 it.name = name
                 it.birthYear = birthYear
@@ -51,7 +50,7 @@ class PersonRepository {
     }
 
     fun delete(id: Int) {
-        transaction(Database.connection) {
+        transaction() {
             PersonEntity.findById(id)?.delete()
         }
     }
